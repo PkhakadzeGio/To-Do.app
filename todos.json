@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "task": "go to gym",
+    "done": false,
+    "date": "2026-02-23T15:56:32.078Z",
+    "dueDate": null
+  },
+  {
+    "id": 2,
+    "task": "smoke weed",
+    "done": false,
+    "date": "2026-02-26T13:58:53.006Z",
+    "dueDate": "2026-02-26T20:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "task": "go for a walk",
+    "done": false,
+    "date": "2026-02-26T15:57:23.886Z",
+    "dueDate": null
+  },
+  {
+    "id": 4,
+    "task": "go to the groceries",
+    "done": false,
+    "date": "2026-02-26T15:57:54.642Z",
+    "dueDate": "2026-02-27T00:00:00.000Z"
+  }
+]
