@@ -2,12 +2,12 @@ import readline from "node:readline/promises";
 import toDoManager from "./toDoManager.js";
 
 function printTasks(tasks) {
-	tasks.forEach((t, idx) => {
+	tasks.forEach((t) => {
 		console.log(
-			`${idx + 1} - [Id : ${t.id}] - [${t.done ? "✅" : "❌"}] ${t.task[0].toUpperCase() + t.task.slice(1).toLowerCase()} - DueDate : [${formatDate(t.dueDate)}]`,
-		);
-	});
-}
+			`Id : [${t.id}] - [${t.done ? "✅" : "❌"}] ${t.task[0].toUpperCase() + t.task.slice(1).toLowerCase()} - DueDate : [${formatDate(t.dueDate)}]`)})
+
+	}
+
 
 function formatDate(dateString) {
 	if (!dateString) return "No date";
@@ -32,6 +32,42 @@ function getTaskOrBack(message) {
 		return null;
 	}
 	return tasks;
+}
+
+async function handleEditTaskById(id) {
+	const newTask = await rl.question("Edit Task : ");
+	const answer = await rl.question(
+		`Are you sure you want to edit task with Id : "${id}" \n with "${newTask}" ?  y/n  :  `,
+	);
+
+	if (answer.trim().toLowerCase() === "y") {
+		const result = toDoManager.editTask(Number(id), newTask);
+		console.log(result);
+		await rl.question("Press [Enter] for continue...");
+	} else {
+		console.log("Back to menu");
+	}
+}
+
+async function handleMarkTaskById(id) {
+	const result = toDoManager.toggleTask(Number(id));
+	console.log(result);
+
+	await rl.question("Press [Enter] to continue...");
+}
+
+async function handleDeleteTaskById(id) {
+	const answer = await rl.question(
+		`Are you sure you want to delete task with Id: "${id}" ?  y/n :  `,
+	);
+
+	if (answer.trim().toLowerCase() === "y") {
+		const result = toDoManager.deleteTask(Number(id));
+		console.log(result);
+		await rl.question("Press [Enter] for continue...");
+	} else {
+		console.log("Back to menu");
+	}
 }
 
 async function navigationPromptForSubMenu() {
@@ -150,17 +186,7 @@ async function main() {
 					if (option === 1) {
 						printTasks(toDoManager.getTasks());
 						const id = await rl.question("Enter id for deleting : ");
-						const answer = await rl.question(
-							`Are you sure you want to delete task with Id: "${id}" ?  y/n :  `,
-						);
-
-						if (answer.trim().toLowerCase() === "y") {
-							const result = toDoManager.deleteTask(Number(id));
-							console.log(result);
-							await rl.question("Press [Enter] for continue...");
-						} else {
-							console.log("Back to menu"); // it is correct or should I act in other way?
-						}
+						await handleDeleteTaskById(id);
 					} else if (option === 2) {
 						printTasks(toDoManager.getTasks());
 						const answer = await rl.question(
@@ -204,10 +230,7 @@ async function main() {
 			printTasks(tasks);
 
 			const id = await rl.question("Enter Task Id to mark  : ");
-			const result = toDoManager.toggleTask(Number(id));
-			console.log(result);
-
-			await rl.question("Press [Enter] to continue...");
+			await handleMarkTaskById(id);
 		} else if (option === 5) {
 			const tasks = getTaskOrBack("No Tasks To Edit");
 			if (!tasks) return;
@@ -215,18 +238,7 @@ async function main() {
 			printTasks(tasks);
 
 			const id = await rl.question("Enter Id : ");
-			const newTask = await rl.question("Edit Task : ");
-			const answer = await rl.question(
-				`Are you sure you want to edit task with Id : "${id}" \n with "${newTask}" ?  y/n  :  `,
-			);
-
-			if (answer.trim().toLowerCase() === "y") {
-				const result = toDoManager.editTask(Number(id), newTask);
-				console.log(result);
-				await rl.question("Press [Enter] for continue...");
-			} else {
-				console.log("Back to menu");
-			}
+			await handleEditTaskById(id);
 		} else if (option === 6) {
 			const tasks = getTaskOrBack("No tasks yet");
 			if (!tasks) return;
@@ -242,17 +254,25 @@ async function main() {
 					);
 					const chosenTask = toDoManager
 						.getTasks()
-						.filter((t) => t.id === Number(id));
+						.find((t) => t.id === Number(id));
 					if (!chosenTask) {
 						console.log("Invalid id");
 					} else {
 						console.log("1. Edit");
 						console.log("2. Mark");
 						console.log("3. Delete");
-						const nextOption = await rl.question(
-							"What you want to do with chosen task ? : ",
+						const nextOption = Number(
+							await rl.question("What you want to do with chosen task ? : "),
 						);
-						
+						if (nextOption === 1) {
+							await handleEditTaskById(chosenTask.id);
+						} else if (nextOption === 2) {
+							await handleMarkTaskById(chosenTask.id);
+						} else if (nextOption === 3) {
+							await handleDeleteTaskById(chosenTask.id);
+						} else {
+							console.log("Enter valid number");
+						}
 					}
 				}
 			} else {

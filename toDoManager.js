@@ -24,13 +24,13 @@ const toDoManager = {
 		fs.writeFileSync(this._filename, JSON.stringify(this._tasks, null, 2));
 	},
 
-	addTask(task,dueDate) {
+	addTask(task, dueDate) {
 		if (!task || task.trim() === "") return "Task cannot be empty";
 		if (this._tasks.some((t) => t.task.toLowerCase() === task.toLowerCase()))
 			return "Task already exists";
 
 		const normilizeDTask = task.trim().toLowerCase();
-		const finalDueDate = dueDate.trim() === "" ? null : new Date(dueDate)
+		const finalDueDate = dueDate.trim() === "" ? null : new Date(dueDate);
 
 		const newTask = {
 			id:
@@ -39,8 +39,8 @@ const toDoManager = {
 					: 1,
 			task: normilizeDTask,
 			done: false,
-			date : new Date().toISOString(),
-			dueDate : finalDueDate || null
+			date: new Date().toISOString(),
+			dueDate: finalDueDate || null,
 		};
 
 		this._tasks.push(newTask);
@@ -148,24 +148,24 @@ const toDoManager = {
 		return this._tasks.filter((t) => !t.done);
 	},
 
-	sortTaskByDate(){
-		return [...this._tasks].sort((a,b) => {
-			if(!a.dueDate) return 1
-			if(!b.dueDate) return -1
-			return new Date(a.dueDate) - new Date(b.dueDate)
-		})
+	sortTaskByDate() {
+		return [...this._tasks].sort((a, b) => {
+			if (!a.dueDate) return 1;
+			if (!b.dueDate) return -1;
+			return new Date(a.dueDate) - new Date(b.dueDate);
+		});
 	},
 
-	searchForTask(input){
-		if(typeof(input) !== "string"){
-			return "Type words which are you searching for ..."
+	searchForTask(input) {
+		if (typeof input !== "string") {
+			return "Type words which are you searching for ...";
 		}
-		const words = input.toLowerCase().trim().split(/\s+/)
-		const found = this._tasks.filter(t => words.some(word => t.task.includes(word)))
+		const words = input.toLowerCase().trim().split(/\s+/);
+		const found = this._tasks.filter((t) =>
+			words.some((word) => t.task.toLowerCase().includes(word.toLowerCase())),
+		);
 
-
-		return found.length > 0 ? found : "Task not found"
-
+		return found.length > 0 ? found : "Task not found";
 	},
 
 	getTasks() {
